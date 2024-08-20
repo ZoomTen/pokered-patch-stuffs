@@ -87,3 +87,80 @@ PrintStartMenuItem:
 	ld de, SCREEN_WIDTH * 2
 	add hl, de
 	ret
+
+DrawMenuAccount::
+; prints a short blurb about the
+; current selection, just like in GSC
+	hlcoord 0, 13
+	lb bc, 5, 10
+	call ClearScreenArea
+	ld a, [wStatusFlags4]
+	bit BIT_LINK_CONNECTED, a
+	ld de, .EntriesLink
+	jr nz, .check_pokedex
+	ld de, .Entries
+.check_pokedex
+	CheckEvent EVENT_GOT_POKEDEX
+	ld a, [wCurrentMenuItem]
+	jr nz, .got_table
+	inc a
+.got_table
+	add a
+	ld l, a
+	ld h, 0
+	add hl, de
+	ld e, [hl]
+	inc hl
+	ld d, [hl]
+	hlcoord 0, 14
+	jp PlaceString
+
+.Entries
+	dw .Pokedex
+	dw .Pokemon
+	dw .Item
+	dw .Player
+	dw .Save
+	dw .Option
+	dw .Exit
+
+.EntriesLink
+	dw .Pokedex
+	dw .Pokemon
+	dw .Item
+	dw .Player
+	dw .Reset
+	dw .Option
+	dw .Exit
+
+.Pokedex
+	db "#MON"
+	next "database@"
+
+.Pokemon
+	db "Party <PKMN>"
+	next "status@"
+
+.Item
+	db "Contains"
+	next "items@"
+
+.Player
+	db "Your own"
+	next "status@"
+
+.Save
+	db "Save your"
+	next "progress@"
+
+.Reset
+	db "Soft-reset"
+	next "the game@"
+
+.Option
+	db "Change"
+	next "settings@"
+
+.Exit
+	db "Close this"
+	next "menu@"
