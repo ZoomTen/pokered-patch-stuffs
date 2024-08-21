@@ -88,23 +88,34 @@ PrintStartMenuItem:
 	add hl, de
 	ret
 
-DrawMenuAccount::
 ; prints a short blurb about the
 ; current selection, just like in GSC
+DrawMenuAccount::
+; prepare the background
 	hlcoord 0, 13
 	lb bc, 5, 10
 	call ClearScreenArea
+
+; determine which table to use
 	ld a, [wStatusFlags4]
 	bit BIT_LINK_CONNECTED, a
-	ld de, .EntriesLink
+; use the table replacing "SAVE" with "RESET"
+	ld de, StartMenuDescriptionTable.LinkTable
 	jr nz, .check_pokedex
-	ld de, .Entries
+; use regular table if we're not in link mode
+	ld de, StartMenuDescriptionTable
+
 .check_pokedex
 	CheckEvent EVENT_GOT_POKEDEX
 	ld a, [wCurrentMenuItem]
 	jr nz, .got_table
+; shift one index forwards to reflect the fact that
+; we haven't gotten a dex yet
 	inc a
+
 .got_table
+; select the correct pointer to the entry, and then load
+; the entry into the DE register for use as a parameter for PlaceString
 	add a
 	ld l, a
 	ld h, 0
@@ -112,55 +123,9 @@ DrawMenuAccount::
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
+
+; finally, display the string.
 	hlcoord 0, 14
 	jp PlaceString
 
-.Entries
-	dw .Pokedex
-	dw .Pokemon
-	dw .Item
-	dw .Player
-	dw .Save
-	dw .Option
-	dw .Exit
-
-.EntriesLink
-	dw .Pokedex
-	dw .Pokemon
-	dw .Item
-	dw .Player
-	dw .Reset
-	dw .Option
-	dw .Exit
-
-.Pokedex
-	db "#MON"
-	next "database@"
-
-.Pokemon
-	db "Party <PKMN>"
-	next "status@"
-
-.Item
-	db "Contains"
-	next "items@"
-
-.Player
-	db "Your own"
-	next "status@"
-
-.Save
-	db "Save your"
-	next "progress@"
-
-.Reset
-	db "Soft-reset"
-	next "the game@"
-
-.Option
-	db "Change"
-	next "settings@"
-
-.Exit
-	db "Close this"
-	next "menu@"
+INCLUDE "data/start_menu_descriptions.asm"
