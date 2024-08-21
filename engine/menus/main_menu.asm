@@ -357,19 +357,19 @@ CableClubOptionsText:
 DisplayContinueGameInfo:
 	xor a
 	ldh [hAutoBGTransferEnabled], a
-	hlcoord 4, 6
+	hlcoord 2, 6
 	ld b, 10
-	ld c, 14
+	ld c, 16
 	call TextBoxBorder
 ; show map legend
 	ld a, [wCurMap]
 	ld e, a
 	farcall GetMapName
-	hlcoord 5, 8
+	hlcoord 3, 8
 	ld de, wNameBuffer
 	call PlaceString
 ; show normal info
-	hlcoord 5, 10
+	hlcoord 3, 10
 	ld de, SaveScreenInfoText
 	call PlaceString
 	hlcoord 12, 10
@@ -389,9 +389,9 @@ DisplayContinueGameInfo:
 PrintSaveScreenText:
 	xor a
 	ldh [hAutoBGTransferEnabled], a
-	hlcoord 4, 0
+	hlcoord 2, 0
 	ld b, 10
-	ld c, 14
+	ld c, 16
 	call TextBoxBorder
 	call LoadTextBoxTilePatterns
 	call UpdateSprites
@@ -399,11 +399,11 @@ PrintSaveScreenText:
 	ld a, [wCurMap]
 	ld e, a
 	farcall GetMapName
-	hlcoord 5, 2
+	hlcoord 3, 2
 	ld de, wNameBuffer
 	call PlaceString
 ; show normal info
-	hlcoord 5, 4
+	hlcoord 3, 4
 	ld de, SaveScreenInfoText
 	call PlaceString
 	hlcoord 12, 4
